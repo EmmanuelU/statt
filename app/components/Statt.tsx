@@ -32,7 +32,7 @@ export default function Chat() {
 
 
     async function fetchLog() {
-        const res = await fetch("/api/log")
+        const res = await fetch("/api/log",{cache: "no-store"})
         const log = await res.json()
 
         setLog(log.status)
