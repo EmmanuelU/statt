@@ -12,6 +12,8 @@ import { useRouter } from "next/navigation";
 
 const examples = [
     "What is the current status?",
+    "When was the report last updated?",
+    "Read out the full report.",
     "Make a change to watchlist."
 ];
 
