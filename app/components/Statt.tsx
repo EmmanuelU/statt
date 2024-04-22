@@ -148,7 +148,7 @@ export default function Chat() {
                         rows={1}
                         maxRows={5}
                         autoFocus
-                        placeholder="Send a message, organize journal by dates"
+                        placeholder="Send a message, ask questions"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={(e) => {
