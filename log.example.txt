@@ -1,0 +1,14 @@
+Please see below
+https://team.uic.edu/
+Status: Status: 200
+GOOD RESPONSE: Content Length: 58952
+https://confluence.team.uic.edu/
+Status: Status: 200
+GOOD RESPONSE: Content Length: 32347
+https://uic.starrezhousing.com/StarRezWeb
+Status: Status: 200
+GOOD RESPONSE: Content Length: 25743
+https://apps.housing.uic.edu/app/iverify
+Status: Status: 200
+GOOD RESPONSE: Content Length: 1129
+© 2023 The following test was ran on Apr-22-2024 14:15:59
