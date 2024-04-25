@@ -4,6 +4,17 @@ const nextConfig = {
     serverActions: true,
   },
 
+  headers: () => [
+    {
+      source: '/:path*',
+      headers: [
+        {
+          key: 'Cache-Control',
+          value: 'no-store',
+        },
+      ],
+    },
+  ],
 };
 
 
