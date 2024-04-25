@@ -27,16 +27,23 @@ export default function Chat() {
     const inputRef = useRef<HTMLTextAreaElement>(null);
 
     const [statt, setStatt] = useState(fetchStatt())
-    const [log, setLog] = useState()
+    const [log, setLog] = useState("")
     const router = useRouter()
 
 
 
     async function fetchLog() {
+        /*
         const res = await fetch("/api/log",{next: { revalidate: 0 }, cache: "no-store"})
         const log = await res.json()
 
         setLog(log.status)
+        */ 
+        const res = await fetch("https://realmtest.sfo3.digitaloceanspaces.com/uic-statt0/log/log.example.txt")
+        const log = await res.text()
+
+        setLog(log)
+
         console.log(log)
     }
 
