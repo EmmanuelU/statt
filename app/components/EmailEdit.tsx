@@ -14,14 +14,14 @@ const examples = [
     "Clear."
 ];
 
-async function fetchStatt() {
+async function fetchEmails() {
     /*
     const res = await fetch("/api/log",{next: { revalidate: 0 }, cache: "no-store"})
     const log = await res.json()
 
     setLog(log.status)
     */
-    const res = await fetch("https://realmtest.sfo3.digitaloceanspaces.com/uic-statt0/log/urls.example.json", {
+    const res = await fetch("https://realmtest.sfo3.digitaloceanspaces.com/uic-statt0/log/emails.example.json", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -31,7 +31,7 @@ async function fetchStatt() {
     });
     const log = await res.json()
 
-    return log.urls;
+    return log.emails;
 }
 
 /*
@@ -40,7 +40,7 @@ function fetchStatt() {
 }
     */
 
-async function updateStatt(val: string | undefined) {
+async function updateEmails(val: string | undefined) {
     if (typeof val === "undefined")
         return;
 
@@ -49,10 +49,10 @@ async function updateStatt(val: string | undefined) {
 
     // Create a JSON object with the key 'urls'
     const jsonObject = {
-        urls: urlArray
+        emails: urlArray
     };
 
-    const res = await fetch("/api/urls", {
+    const res = await fetch("/api/emails", {
         method: "POST",
         body: JSON.stringify(jsonObject),
         headers: {
@@ -61,7 +61,7 @@ async function updateStatt(val: string | undefined) {
         },
     });
 
-    alert("Updated watchlist.");
+    alert("Updated emails.");
 }
 function clearStatt() {
     (typeof window !== 'undefined' && window.localStorage.removeItem("statt_test"))
@@ -73,13 +73,13 @@ export default function Chat() {
     const formRef = useRef<HTMLFormElement>(null);
     const inputRef = useRef<HTMLTextAreaElement>(null);
 
-    const [statt, setStatt] = useState<string | undefined>();
+    const [emails, setEmails] = useState<string | undefined>();
 
     const router = useRouter()
 
     async function fetcher() {
-        const res = await fetchStatt();
-        setStatt(res)
+        const res = await fetchEmails();
+        setEmails(res)
     }
 
     useEffect(() => {
@@ -109,7 +109,7 @@ export default function Chat() {
                                     router.push("/")
                                 }
                                 else if (example === "Save changes.") {
-                                    updateStatt(statt)
+                                    updateEmails(emails)
                                 }
                                 else if (example === "Clear.") {
                                     clearStatt()
@@ -136,8 +136,8 @@ export default function Chat() {
                         maxRows={5}
                         autoFocus
                         placeholder="Send a message, organize journal by dates"
-                        value={statt}
-                        onChange={(e) => setStatt(e.target.value)}
+                        value={emails}
+                        onChange={(e) => setEmails(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === "Enter" && !e.shiftKey) {
                                 formRef.current?.requestSubmit();
@@ -149,7 +149,7 @@ export default function Chat() {
                     />
                     <button
                         onClick={() => {
-                            updateStatt(statt)
+                            updateEmails(emails)
                         }}
                         className={clsx(
                             "absolute inset-y-0 right-3 my-auto flex h-8 w-8 items-center justify-center rounded-md transition-all",
@@ -160,7 +160,7 @@ export default function Chat() {
                         <SendIcon
                             className={clsx(
                                 "h-4 w-4",
-                                statt && statt.length === 0 ? "text-gray-300" : "text-white",
+                                emails && emails.length === 0 ? "text-gray-300" : "text-white",
                             )}
                         />
 

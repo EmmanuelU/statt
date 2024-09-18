@@ -11,11 +11,13 @@ import Textarea from "react-textarea-autosize";
 import { useRouter } from "next/navigation";
 
 const examples = [
+    "Generate a new report.",
     "What is the current status?",
     "Which URLs were analyzed?",
     "When was the report last updated? (current timezone)",
     "Read out the full report.",
-    "Make a change to watchlist."
+    "Make a change to watchlist.",
+    "Make a change to notification group."
 ];
 
 function fetchStatt() {
@@ -38,13 +40,26 @@ export default function Chat() {
         const log = await res.json()
 
         setLog(log.status)
-        */ 
-        const res = await fetch("https://realmtest.sfo3.digitaloceanspaces.com/uic-statt0/log/log.example.txt")
+        */
+        const res = await fetch("https://realmtest.sfo3.digitaloceanspaces.com/uic-statt0/log/log.example.txt", {
+            cache: "no-cache"
+        })
         const log = await res.text()
 
         setLog(log)
 
         console.log(log)
+    }
+
+    async function newLog() {
+        /*
+        const res = await fetch("/api/log",{next: { revalidate: 0 }, cache: "no-store"})
+        const log = await res.json()
+
+        setLog(log.status)
+        */
+        const res = await fetch("https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-57c901d6-87ec-4d97-8aac-42270b1b86cb/default/statt-log")
+
     }
 
 
@@ -126,6 +141,16 @@ export default function Chat() {
                             onClick={() => {
                                 if (example === "Make a change to watchlist.") {
                                     router.push("/edit")
+                                }
+                                if (example === "Make a change to notification group.") {
+                                    router.push("/emails")
+                                }
+                                else if (example === "Generate a new report.") {
+                                    newLog();
+                                    alert("Report may take a few seconds to update.")
+                                    if (window)
+                                        window.location.reload();
+
                                 }
                                 else {
 
