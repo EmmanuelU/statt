@@ -147,7 +147,7 @@ export default function Chat() {
                                 }
                                 else if (example === "Generate a new report.") {
                                     newLog();
-                                    alert("Report may take a few seconds to appear.")
+                                    alert("Report may take a few minutes to appear.")
                                     if (window)
                                         window.location.reload();
 

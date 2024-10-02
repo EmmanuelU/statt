@@ -15,10 +15,6 @@ export async function POST(request) {
 
         const { urls } = await request.json();
 
-        console.log(urls)
-        //urls
-
-
         const metaupload = new Upload({
             client: s3Client,
             params: {
