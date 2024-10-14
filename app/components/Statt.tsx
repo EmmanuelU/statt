@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 
 const examples = [
     "Generate a new report.",
+    "Send an email to watchlist.",
     "What is the current status?",
     "Which URLs were analyzed?",
     "When was the report last updated? (current timezone)",
@@ -59,6 +60,18 @@ export default function Chat() {
         setLog(log.status)
         */
         const res = await fetch("https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-57c901d6-87ec-4d97-8aac-42270b1b86cb/default/statt-log")
+
+    }
+
+
+    async function emailLog() {
+        /*
+        const res = await fetch("/api/log",{next: { revalidate: 0 }, cache: "no-store"})
+        const log = await res.json()
+
+        setLog(log.status)
+        */
+        const res = await fetch("https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-57c901d6-87ec-4d97-8aac-42270b1b86cb/default/statt-log?forceEmail=true")
 
     }
 
@@ -147,11 +160,20 @@ export default function Chat() {
                                 }
                                 else if (example === "Generate a new report.") {
                                     newLog();
-                                    alert("Report may take a few minutes to appear.")
+                                    alert("Report may take a few minutes to refresh.")
                                     if (window)
                                         window.location.reload();
 
                                 }
+
+                                else if (example === "Send an email to watchlist.") {
+                                    emailLog();
+                                    alert("Email will be sent once report is refreshed.")
+                                    if (window)
+                                        window.location.reload();
+
+                                }
+
                                 else {
 
                                     setInput(example);

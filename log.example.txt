@@ -12,3 +12,208 @@ https://apps.housing.uic.edu/app/iverify
 Status: Status: 200
 GOOD RESPONSE: Content Length: 1129
 © 2023 The following test was ran on Apr-22-2024 14:15:59
+
+import requests
+import smtplib
+import ssl
+import os
+import boto3
+from botocore.exceptions import NoCredentialsError
+import tempfile
+import json
+from urllib.parse import urlsplit
+import smtplib
+import ssl
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from datetime import datetime
+
+# ENV Variables
+# SMTP_SSL_PORT
+# SMTP
+# SENDER_EMAIL
+# SMTP_PORT
+# SENDER_PASS
+#listolinks=["https://anothabad.team.uic.edu/","https://team.uic.edu/","https://confluence.team.uic.edu/","https://bad.team.uic.edu/"]
+#listolinks=["https://team.uic.edu/","https://confluence.team.uic.edu/","https://uic.starrezhousing.com/StarRezWeb", "https://apps.housing.uic.edu/app/iverify"]
+
+today = datetime.now()
+log = ['']
+logdate = today.strftime("%b-%d-%Y %H:%M:%S")
+s3 = boto3.client('s3',region_name='sfo3', endpoint_url='https://sfo3.digitaloceanspaces.com', aws_access_key_id=os.getenv('DO_SPACES_ID'),
+                      aws_secret_access_key=os.getenv('DO_SPACES_SECRET'))
+
+
+def download_from_aws(bucket, s3_file):
+    json_file_key = s3_file
+    
+    # Download the JSON file from S3
+    response = s3.get_object(Bucket=bucket, Key=json_file_key)
+
+    # Read the contents of the file
+    json_data = json.loads(response['Body'].read().decode('utf-8'))
+
+    return json_data
+
+def upload_to_aws(local_file, bucket, s3_file):
+
+    try:
+        s3.put_object(Bucket=bucket, Body=local_file,Key=s3_file, ACL="public-read", ContentType="text/plain")
+        #s3.upload_file(local_file, bucket, s3_file)
+        print("Upload Successful")
+        return True
+    except FileNotFoundError:
+        print("The file was not found")
+        return False
+    except NoCredentialsError:
+        print("Credentials not available")
+        return False
+
+def rprint(val):
+    global log
+    log.append(val)
+    print("")
+    print(val)
+
+
+def fetch_report(url):
+    try:
+        _r = requests.head(
+            url, allow_redirects=True)
+        _len = _r.headers.get("Content-Length")
+        _his = str(_r.headers)
+        _status = requests.get(url)
+        _res = _status.content
+    except Exception as err:
+        return {"error": err}
+
+    return {"len": _len, "status": str(_status.status_code), "response": _res, "header": _his}
+
+
+def run_reports(urls):
+    ret = True
+    for url in urls:
+        rprint(url)
+
+        report = fetch_report(url)
+        reportstring = ""
+        for key, value in report.items():
+            reportstring += (f"{key}: {value}") + "\n"
+            if key != "response":
+                rprint(f"{key}: {value}")
+        split_url = urlsplit(url)
+        print(upload_to_aws(reportstring, 'realmtest', 'uic-statt0/log/report/' + split_url.netloc + '/log.txt'))
+
+    return ret
+
+def generate_html_table(data):
+    table = "<table border='1' style='border-collapse: collapse;'>"
+    
+    # Add table header
+    table += "<tr><th>URL</th><th>Response</th></tr>"
+    
+    # Iterate over the data in pairs
+    for i in range(0, len(data), 2):
+        if i + 1 < len(data):  # Ensure we have both URL and response
+            url = data[i]
+            response = data[i+1]
+            
+            # Determine row style and format response
+        
+            response_text = str(response)
+            row_style = "background-color: #c8e6c9;"
+            
+            # Create table rows
+            url_cell = f"<td style='padding: 5px;'>{url}</td>"
+            response_cell = f"<td style='padding: 5px;'>{response_text}</td>"
+            table += f"<tr style='{row_style}'>{url_cell}{response_cell}</tr>"
+    
+    table += "</table>"
+    return table
+        
+def string_html_table(raw_data):
+    urls = []
+    responses = []
+
+    i = 2
+    while i < len(raw_data):
+        url = raw_data[i]
+        response = raw_data[i+1]
+        urls.append(url)
+        responses.append(response)
+        i += 5
+    
+    return [url, responses]
+
+def sendmail(nun, errorappend, emails):
+    smtp_server = os.getenv('SMTP')
+    port = os.getenv('SMTP_PORT')
+    ssl_port = os.getenv('SMTP_SSL_PORT')
+    sender_email = os.getenv('SENDER_EMAIL')
+    password = os.getenv('SENDER_PASS')
+
+    context = ssl.create_default_context()
+
+    print("Spooling service ...")
+    try:
+        server = smtplib.SMTP(smtp_server, port)
+        server.ehlo()
+        server.starttls(context=context)
+        server.ehlo()
+        server.login(sender_email, password)
+    except Exception as e:
+        print(e)
+    finally:
+        server.quit()
+
+    receiver_email = os.getenv('RECEIVER_EMAIL')
+
+    message = MIMEMultipart("alternative")
+    message["From"] = sender_email
+    message["To"] = receiver_email
+    title = "Title"
+    header = "Please see below"
+    print("help:")
+    print(nun)
+    body = generate_html_table(nun)
+    if errorappend == False:#need attn
+        appp = "URGENT ERROR "
+    else:
+        appp = ""
+
+    message["Subject"] =  appp + "Website Statt " + logdate
+    footer = "The following test was ran on " + logdate
+    style = "    /* reset default styles */    body {      margin: 0;      padding: 0;      font-family: Arial, sans-serif;      font-size: 16px;      line-height: 1.5;    }        /* set styles for header */    .header {      background-color: #F9F9F9;      border-top: 10px solid #1B1B1B;      padding: 20px;      text-align: center;    }        /* set styles for header text */    .header h1 {      margin: 0;      font-size: 32px;      font-weight: bold;      color: #1B1B1B;    }        /* set styles for body */    .body {      padding: 20px;    }        /* set styles for body text */    .body p {      margin: 0;      color: #333333;    }        /* set styles for footer */    .footer {      background-color: #1B1B1B;      color: #FFFFFF;      padding: 20px;      text-align: center;    }        /* set styles for footer text */    .footer p {      margin: 0;    }  "
+    body =f'<!DOCTYPE html><html lang="en"><head>  <meta charset="UTF-8">  <title>{title}</title>  <style>{style}</style></head><body>  <div class="header">    <h1>{header}</h1>  </div>  <div class="body">    <p>{body}</p>  </div>  <div class="footer">    <p>&copy; 2023 {footer}</p></div></body></html>'
+
+    
+
+    part1 = MIMEText("".join((str(l) + "\n")
+                             for l in nun), "plain")
+    part2 = MIMEText(body, "html")
+    message.attach(part1)
+    message.attach(part2)
+
+    # Create secure connection with server and send email
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL(smtp_server, ssl_port, context=context) as server:
+        server.login(sender_email, password)
+        server.sendmail(
+            sender_email, [receiver_email] + emails, message.as_string()
+        )
+
+
+def main(args):
+    linkss = download_from_aws('realmtest','uic-statt0/log/urls.example.json')
+    emailss = download_from_aws('realmtest','uic-statt0/log/emails.example.json')
+    to = args.get("to", "stranger")
+    greeting = "Hello " + to + "!"
+    print(greeting)
+    rprint(logdate)
+    errorappend = run_reports(linkss['urls'])
+    sendmail(log, errorappend, emailss['emails'])
+    partone = MIMEText("".join((str(l) + "\n") for l in log), "plain")
+    print(partone)
+
+    print(upload_to_aws(str(partone), 'realmtest', 'uic-statt0/log/log.example.txt'))
+    return string_html_table(log)
