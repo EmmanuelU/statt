@@ -45,6 +45,15 @@ export default function Chat() {
                 if (window) window.location.reload();
             }
         },
+
+        {
+            title: "Post update to JIRA.",
+            onClick: () => {
+                jiraLog();
+                alert("Jira will be updated once report is refreshed.");
+                if (window) window.location.reload();
+            }
+        },
         {
             title: "Which URLs were analyzed?",
             onClick: null // will use default
@@ -86,6 +95,12 @@ export default function Chat() {
 
     async function emailLog() {
         const res = await fetch("https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-57c901d6-87ec-4d97-8aac-42270b1b86cb/default/statt-log?forceEmail=true")
+
+
+    }
+
+    async function jiraLog() {
+        const res = await fetch("https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-57c901d6-87ec-4d97-8aac-42270b1b86cb/default/statt-log?jiraUpdate=true")
 
     }
 
