@@ -10,16 +10,6 @@ import {
 import Textarea from "react-textarea-autosize";
 import { useRouter } from "next/navigation";
 
-const examples = [
-    "Generate a new report.",
-    "Send an email to watchlist.",
-    "What is the current status?",
-    "Which URLs were analyzed?",
-    "When was the report last updated? (current timezone)",
-    "Read out the full report.",
-    "Make a change to watchlist.",
-    "Make a change to notification group."
-];
 
 function fetchStatt() {
     return (typeof window !== 'undefined' && window.localStorage.getItem("statt_test")) || ""
@@ -34,14 +24,50 @@ export default function Chat() {
     const router = useRouter()
 
 
+    const examples = [
+        {
+            title: "What is the current status?",
+            onClick: null // will use default
+        },
+        {
+            title: "Generate a new report.",
+            onClick: () => {
+                newLog();
+                alert("Report may take a few minutes to refresh.");
+                if (window) window.location.reload();
+            }
+        },
+        {
+            title: "Send an email to watchlist.",
+            onClick: () => {
+                emailLog();
+                alert("Email will be sent once report is refreshed.");
+                if (window) window.location.reload();
+            }
+        },
+        {
+            title: "Which URLs were analyzed?",
+            onClick: null // will use default
+        },
+        {
+            title: "When was the report last updated? (current timezone)",
+            onClick: null // will use default
+        },
+        {
+            title: "Read out the full report.",
+            onClick: null // will use default
+        },
+        {
+            title: "Make a change to watchlist.",
+            onClick: () => router.push("/edit")
+        },
+        {
+            title: "Make a change to notification group.",
+            onClick: () => router.push("/emails")
+        }
+    ];
 
     async function fetchLog() {
-        /*
-        const res = await fetch("/api/log",{next: { revalidate: 0 }, cache: "no-store"})
-        const log = await res.json()
-
-        setLog(log.status)
-        */
         const res = await fetch("https://realmtest.sfo3.digitaloceanspaces.com/uic-statt0/log/log.example.txt", {
             cache: "no-cache"
         })
@@ -53,24 +79,12 @@ export default function Chat() {
     }
 
     async function newLog() {
-        /*
-        const res = await fetch("/api/log",{next: { revalidate: 0 }, cache: "no-store"})
-        const log = await res.json()
-
-        setLog(log.status)
-        */
         const res = await fetch("https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-57c901d6-87ec-4d97-8aac-42270b1b86cb/default/statt-log")
 
     }
 
 
     async function emailLog() {
-        /*
-        const res = await fetch("/api/log",{next: { revalidate: 0 }, cache: "no-store"})
-        const log = await res.json()
-
-        setLog(log.status)
-        */
         const res = await fetch("https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-57c901d6-87ec-4d97-8aac-42270b1b86cb/default/statt-log?forceEmail=true")
 
     }
@@ -152,36 +166,16 @@ export default function Chat() {
                             key={i}
                             className="rounded-md border border-gray-200 bg-white px-5 py-3 text-left text-sm text-gray-500 transition-all duration-75 hover:border-black hover:text-gray-700 active:bg-gray-50"
                             onClick={() => {
-                                if (example === "Make a change to watchlist.") {
-                                    router.push("/edit")
-                                }
-                                if (example === "Make a change to notification group.") {
-                                    router.push("/emails")
-                                }
-                                else if (example === "Generate a new report.") {
-                                    newLog();
-                                    alert("Report may take a few minutes to refresh.")
-                                    if (window)
-                                        window.location.reload();
-
-                                }
-
-                                else if (example === "Send an email to watchlist.") {
-                                    emailLog();
-                                    alert("Email will be sent once report is refreshed.")
-                                    if (window)
-                                        window.location.reload();
-
-                                }
-
-                                else {
-
-                                    setInput(example);
+                                // Use custom onClick if defined, otherwise fall back to default behavior
+                                if (example.onClick) {
+                                    example.onClick();
+                                } else {
+                                    setInput(example.title);
                                     inputRef.current?.focus();
                                 }
                             }}
                         >
-                            {example}
+                            {example.title}
                         </button>
                     ))}
                 </div>
