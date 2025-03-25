@@ -1,4 +1,10 @@
 "use client"
+import Textarea from "react-textarea-autosize";
+import { useRouter } from "next/navigation";
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
+import remarkGfm from 'remark-gfm';
 import { useRef, useState, useEffect } from "react";
 import { useChat } from "ai/react";
 import clsx from "clsx";
@@ -7,12 +13,6 @@ import {
     SendIcon,
     UserIcon,
 } from "../icons";
-import Textarea from "react-textarea-autosize";
-import { useRouter } from "next/navigation";
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
-import rehypeSanitize from 'rehype-sanitize';
-import remarkGfm from 'remark-gfm';
 
 
 function fetchStatt() {
