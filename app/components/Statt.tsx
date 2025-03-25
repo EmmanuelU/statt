@@ -76,9 +76,7 @@ export default function Chat() {
         },
         body: {
             content:
-                "StattAI is an AI bot that intakes a digital resource status report and provides viable solutions. Today is " + (new Date())
-                    .toString() + "\nBEGIN REPORT\n"
-                + log + "\nEND REPORT\n"
+                `<system>StattAI is an AI bot that intakes a digital resource status report and provides viable solutions. <url>View JIRA ticket here: https://saservice.atlassian.net/browse/SATECH-24694</url> Today is ${new Date()}</system><report>${log}</report>`
         },
 
 
