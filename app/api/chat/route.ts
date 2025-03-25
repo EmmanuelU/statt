@@ -1,5 +1,4 @@
 import OpenAI from 'openai';
-import { OpenAIStream, StreamingTextResponse } from 'ai';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || '',
@@ -7,29 +6,36 @@ const openai = new OpenAI({
 
 export const runtime = 'edge';
 
-// Define a type for the OpenAI stream chunk with optional promptFilterResults
-interface OpenAIStreamChunkWithPromptFilterResults extends OpenAI.Chat.Completions.ChatCompletionChunk {
-  promptFilterResults?: any; // Replace 'any' with the actual type if you know it
-}
-
 export async function POST(req: Request) {
   const { messages, content } = await req.json();
-
-  const response = await openai.chat.completions.create({
+  
+  const completion = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo',
-    stream: true,
     messages: [
-      {
-        role: 'system',
-        content: content,
-      },
+      { role: 'system', content },
       ...messages,
     ],
+    stream: true,
   });
 
-  const stream = OpenAIStream(response as any, {
-    experimental_streamData: true,
+  // Convert OpenAI stream to web ReadableStream
+  const readableStream = new ReadableStream({
+    async start(controller) {
+      for await (const chunk of completion) {
+
+        const content = chunk.choices[0]?.delta?.content || '';
+        //console.log(content)
+        controller.enqueue(new TextEncoder().encode(content));
+      }
+      controller.close();
+    },
   });
 
-  return new StreamingTextResponse(stream);
+  return new Response(readableStream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+    },
+  });
 }

@@ -6,7 +6,7 @@ import rehypeRaw from 'rehype-raw';
 import rehypeSanitize from 'rehype-sanitize';
 import remarkGfm from 'remark-gfm';
 import { useRef, useState, useEffect } from "react";
-import { useChat } from "@ai-sdk/react";
+import { useChat } from "ai/react";
 import clsx from "clsx";
 import {
     LoadingCircle,
@@ -70,13 +70,13 @@ export default function Chat() {
         const log = await res.text()
 
         setLog(log)
-
-        console.log(log)
     }
 
 
 
     const { messages, input, setInput, handleSubmit, isLoading } = useChat({
+
+        api: '/api/chat', // Make sure this matches your API route
         onResponse: (response) => {
             if (response.status === 500) {
                 window.alert("Error :(")
@@ -107,6 +107,11 @@ export default function Chat() {
         }
 
     }, [])
+
+    useEffect(() => {
+
+        console.log(messages)
+    }, [messages])
 
     const disabled = isLoading || input.length === 0 || input === "Commit an update to your journal.";
 
