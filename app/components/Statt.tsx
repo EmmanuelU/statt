@@ -9,6 +9,10 @@ import {
 } from "../icons";
 import Textarea from "react-textarea-autosize";
 import { useRouter } from "next/navigation";
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
+import remarkGfm from 'remark-gfm';
 
 
 function fetchStatt() {
@@ -38,6 +42,10 @@ export default function Chat() {
             onClick: null // will use default
         },
         {
+            title: "JIRA Ticket Link.",
+            onClick: null // will use default
+        },
+        {
             title: "Read out the full report.",
             onClick: null // will use default
         },
@@ -48,6 +56,10 @@ export default function Chat() {
         {
             title: "Settings.",
             onClick: () => router.push("/config")
+        },
+        {
+            title: "Help.",
+            onClick: null // will use default
         }
     ];
 
@@ -76,7 +88,7 @@ export default function Chat() {
         },
         body: {
             content:
-                `<system>StattAI is an AI bot that intakes a digital resource status report and provides viable solutions. <url>View JIRA ticket here: https://saservice.atlassian.net/browse/SATECH-24694</url> Today is ${new Date()}</system><report>${log}</report>`
+                `<system>StattAI is an AI bot that intakes a digital resource status report and provides viable solutions. View JIRA ticket here: <jira report url>https://saservice.atlassian.net/browse/SATECH-24694</jira report url> Today is ${new Date()}</system><report>${log}</report>`
         },
 
 
@@ -124,7 +136,11 @@ export default function Chat() {
                             )}
                         </div>
                         <div className="prose prose-p:leading-relaxed mt-1 w-full break-words">
-                            {message.content}
+                            <ReactMarkdown
+                                children={message.content}
+                                rehypePlugins={[rehypeRaw, rehypeSanitize]} // Enable raw HTML and sanitize
+                                remarkPlugins={[remarkGfm]} // Enable GFM (tables, autolink literals, etc.)
+                            />
                         </div>
                     </div>
                 </div>
