@@ -139,7 +139,7 @@ export default function ConfigEdit() {
                                 }
                             }}
                         >
-                            {example.title}
+                            {example.title} {example.title === "Save changes." && hasUnsavedChanges && "*"}
                         </button>
                     ))}
                 </div>
