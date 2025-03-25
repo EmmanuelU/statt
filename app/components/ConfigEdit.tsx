@@ -68,7 +68,12 @@ export default function ConfigEdit() {
             }
         }
         ,
-        { title: "Save changes." }
+        {
+            title: "Save changes.",
+            onClick: () => {
+                saveChanges()
+            }
+        }
     ];
 
     useEffect(() => {
