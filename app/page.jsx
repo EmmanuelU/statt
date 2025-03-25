@@ -5,8 +5,8 @@ export async function generateMetadata({ params }) {
 
   return {
     openGraph: {
-      title: "Statt",
-      description: "test",
+      title: "Statt Dashboard",
+      description: "Monitoring, testing.",
       url: "Url",
       siteName: "vibrations",
       images: [
