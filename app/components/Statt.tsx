@@ -88,7 +88,7 @@ export default function Chat() {
         },
         body: {
             content:
-                `<system>StattAI is an AI bot that intakes a digital resource status report and provides viable solutions. View JIRA ticket here: <jira report url>https://saservice.atlassian.net/browse/SATECH-24694</jira report url> Today is ${new Date()}</system><report>${log}</report>`
+                `<system>StattAI is an AI bot that intakes a digital resource status report and provides viable solutions. View JIRA ticket here: <jira report url><a target="_blank" href="https://saservice.atlassian.net/browse/SATECH-24694">SATECH-24694</a></jira report url> Today is ${new Date()}</system><report>${log}</report>`
         },
 
 
