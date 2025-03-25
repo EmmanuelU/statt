@@ -30,31 +30,6 @@ export default function Chat() {
             onClick: null // will use default
         },
         {
-            title: "Generate a new report.",
-            onClick: () => {
-                newLog();
-                alert("Report may take a few minutes to refresh.");
-                if (window) window.location.reload();
-            }
-        },
-        {
-            title: "Send an email to watchlist.",
-            onClick: () => {
-                emailLog();
-                alert("Email will be sent once report is refreshed.");
-                if (window) window.location.reload();
-            }
-        },
-
-        {
-            title: "Post update to JIRA.",
-            onClick: () => {
-                jiraLog();
-                alert("Jira will be updated once report is refreshed.");
-                if (window) window.location.reload();
-            }
-        },
-        {
             title: "Which URLs were analyzed?",
             onClick: null // will use default
         },
@@ -67,12 +42,12 @@ export default function Chat() {
             onClick: null // will use default
         },
         {
-            title: "Make a change to watchlist.",
-            onClick: () => router.push("/edit")
+            title: "Actions.",
+            onClick: () => router.push("/action")
         },
         {
-            title: "Make a change to notification group.",
-            onClick: () => router.push("/emails")
+            title: "Settings.",
+            onClick: () => router.push("/config")
         }
     ];
 
@@ -87,22 +62,6 @@ export default function Chat() {
         console.log(log)
     }
 
-    async function newLog() {
-        const res = await fetch("https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-57c901d6-87ec-4d97-8aac-42270b1b86cb/default/statt-log")
-
-    }
-
-
-    async function emailLog() {
-        const res = await fetch("https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-57c901d6-87ec-4d97-8aac-42270b1b86cb/default/statt-log?forceEmail=true")
-
-
-    }
-
-    async function jiraLog() {
-        const res = await fetch("https://faas-nyc1-2ef2e6cc.doserverless.co/api/v1/web/fn-57c901d6-87ec-4d97-8aac-42270b1b86cb/default/statt-log?jiraUpdate=true")
-
-    }
 
 
     const { messages, input, setInput, handleSubmit, isLoading } = useChat({
