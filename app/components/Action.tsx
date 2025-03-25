@@ -165,51 +165,7 @@ export default function ConfigEdit() {
                 </div>
             </div>
 
-            <div className="fixed bottom-0 flex w-full flex-col items-center space-y-3 bg-gradient-to-b from-transparent via-gray-100 to-gray-100 p-5 pb-3 sm:px-0">
-                <div className="relative w-full max-w-screen-md rounded-xl border border-gray-200 bg-white px-4 pb-2 pt-3 shadow-lg sm:pb-3 sm:pt-4">
-                    <div className="flex flex-wrap gap-2 mb-2">
-                        {Object.entries(config).map(([key, value]) => (
-                            <div
-                                key={key}
-                                className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center"
-                            >
-                                <span>{key}: {value}</span>
-                                <button
-                                    onClick={() => removeConfigValue(key)}
-                                    className="ml-2 text-blue-600 hover:text-blue-800"
-                                >
-                                    &times;
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="flex">
-                        <input
-                            ref={inputRef}
-                            type="text"
-                            value={inputValue}
-                            onChange={(e) => setInputValue(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    addConfigValue();
-                                    e.preventDefault();
-                                }
-                            }}
-                            placeholder="Add key:value pair"
-                            className="w-full pr-10 focus:outline-none"
-                        />
-                        <button
-                            onClick={addConfigValue}
-                            className={clsx(
-                                "ml-2 flex h-8 w-8 items-center justify-center rounded-md transition-all",
-                                "bg-green-500 hover:bg-green-600"
-                            )}
-                        >
-                            <SendIcon className="h-4 w-4 text-white" />
-                        </button>
-                    </div>
-                </div>
-            </div>
+                        
         </main>
     );
 }
