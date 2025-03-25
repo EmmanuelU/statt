@@ -7,6 +7,11 @@ const openai = new OpenAI({
 
 export const runtime = 'edge';
 
+// Define a type for the OpenAI stream chunk with optional promptFilterResults
+interface OpenAIStreamChunkWithPromptFilterResults extends OpenAI.Chat.Completions.ChatCompletionChunk {
+  promptFilterResults?: any; // Replace 'any' with the actual type if you know it
+}
+
 export async function POST(req: Request) {
   const { messages, content } = await req.json();
 
@@ -22,8 +27,8 @@ export async function POST(req: Request) {
     ],
   });
 
-  const stream = OpenAIStream(response, {
-      experimental_streamData: true // Important for correct handling of stream data
+  const stream = OpenAIStream(response as any, {
+    experimental_streamData: true,
   });
 
   return new StreamingTextResponse(stream);
